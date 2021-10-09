@@ -1,5 +1,5 @@
 import firebaseInitializer from "../Firebase/firebase.init";
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, onAuthStateChanged, signOut } from "firebase/auth";
 import { useEffect, useState } from "react";
 
 
@@ -15,10 +15,12 @@ const useFirebase = () => {
                 setUser(user)
             }
         })
-    }, [])
+    }, []);
 
     const auth = getAuth();
     const googleProvider = new GoogleAuthProvider();
+    const facebookProvider = new FacebookAuthProvider();
+
     const signInUsingGoogle = () => {
         signInWithPopup(auth, googleProvider)
             .then(result => {
@@ -29,10 +31,30 @@ const useFirebase = () => {
                 setError(error.message);
             })
     };
+
+    const signInUsingFacebook = () => {
+        signInWithPopup(auth, facebookProvider)
+            .then(result => {
+                setUser(result.user)
+            })
+            .catch(error => {
+                setError(error.message)
+            })
+    };
+
+    const logOut = () => {
+        signOut(auth)
+            .then(() => {
+                setUser({})
+            })
+    };
+
     return {
         user,
         error,
-        signInUsingGoogle
+        signInUsingGoogle,
+        signInUsingFacebook,
+        logOut
     }
 };
 
